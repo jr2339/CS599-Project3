@@ -1,0 +1,29 @@
+[
+  {
+    "type": "plane",
+    "diffuse_color": [0.1, 1.0, 0.1],
+    "specular_color": [1.0, 1.0, 1.0],
+    "position": [0, -1, 0],
+    "normal": [0, 1, 0]
+  },
+  {
+    "type": "sphere",
+    "diffuse_color": [0.1, 0.7, 0.1],
+    "specular_color": [1.0, 1.0, 1.0],
+    "position": [0, 0, 10],
+    "radius": 1
+  },
+  {
+    "type": "camera",
+    "width": 0.5,
+    "height": 0.5
+  },
+  {
+    "type": "light",
+    "color": [10.0, 10.0, 10.0],
+    "position": [10, 0, 10],
+    "radial-a2": 1,
+    "radial-a1": 1,
+    "radial-a0": 1
+  }
+]

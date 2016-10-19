@@ -17,14 +17,14 @@ double check_value(double color_val){
         return color_val;
 }
 /*=======================================================================================================================*/
-void calculate_diffuse(double *N, double *L, double *IL, double *KD, double *out_color) {
+void get_diffuse(double *normal_vector, double *light_vector, double *light_color, double *object_color, double *out_color) {
 
-    double n_dot_l = Vector_dot(N, L);
+    double n_dot_l = Vector_dot(normal_vector, light_vector);
     if (n_dot_l > 0) {
         Vector diffuse_product;
-        diffuse_product[0] = KD[0] * IL[0];
-        diffuse_product[1] = KD[1] * IL[1];
-        diffuse_product[2] = KD[2] * IL[2];
+        diffuse_product[0] = object_color[0] * light_color[0];
+        diffuse_product[1] = object_color[1] * light_color[1];
+        diffuse_product[2] = object_color[2] * light_color[2];
 
         Vector_scale(diffuse_product, n_dot_l, out_color);
     }

@@ -243,7 +243,7 @@ void shade(Ray *ray, int object_index, double t, double color[3]) {
             Vector_zero(diffuse);
             Vector_zero(specular);
 
-            calculate_diffuse(normal, L, lights[i].color, obj_diff_color, diffuse);
+            get_diffuse(normal, L, lights[i].color, obj_diff_color, diffuse);
             calculate_specular(20, L, R, normal, V, obj_spec_color, lights[i].color, specular);
             
             double fang,frad;

@@ -13,11 +13,11 @@
 #include <math.h>
 #include "vector.h"
 //double calculate_angular_att(LIGHT *light, double direction_to_object[3]);
-void calculate_diffuse(double *normal_vector,
-                       double *light_vector,
-                       double *light_color,
-                       double *obj_color,
-                       double *out_color);
+void get_diffuse(double *normal_vector,
+                 double *light_vector,
+                 double *light_color,
+                 double *object_color,
+                 double *out_color);
 
 void calculate_specular(double ns,
                         double *L,

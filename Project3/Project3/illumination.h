@@ -19,7 +19,7 @@ void get_diffuse(double *normal_vector,
                  double *object_color,
                  double *out_color);
 
-void calculate_specular(double ns,
+void get_specular(double ns,
                         double *L,
                         double *R,
                         double *N,

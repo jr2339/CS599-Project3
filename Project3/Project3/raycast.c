@@ -89,16 +89,17 @@ double sphere_intersection(Ray *ray, double *C, double r) {
     return t;
 }
 /*==================================================================================================*/
-double quadric_intersection(Ray *ray, double *Co){
-    double a,b,c;
-    Vector Position;
+double quadric_intersection(Ray *ray, double *Co,double* Position){
     
+    double a,b,c;
+
     a = (Co[0]) * sqr(ray->direction[0]) + (Co[1]) * sqr(ray->direction[1]) + (Co[2]) * sqr(ray->direction[2]) + (Co[3]) * (ray->direction[0]) * (ray->direction[1]) + (Co[4]) * (ray->direction[0]) * (ray->direction[2]) + (Co[5]) * (ray->direction[1]) * (ray->direction[2]);
+
     
     b = 2*(Co[0]) * (ray->origin[0] - Position[0]) * (ray->direction[0]) + 2*(Co[1]) * (ray->origin[1] - Position[1]) * (ray->direction[1]) + 2*(Co[2]) * (ray->origin[2] - Position[2]) * (ray->direction[2]) + (Co[3]) * ((ray->origin[0] - Position[0]) * (ray->direction[1]) + (ray->origin[1] - Position[1]) * (ray->direction[0])) + (Co[4]) * (ray->origin[0] - Position[0]) * (ray->direction[2]) + (Co[5]) * ((ray->origin[1] - Position[1]) * (ray->direction[2]) + (ray->direction[1]) * (ray->origin[2] - Position[2])) + (Co[6]) * (ray->direction[0]) + (Co[7]) * (ray->direction[1]) + (Co[8]) * (ray->direction[2]);
     
-    
     c = (Co[0]) * sqr(ray->origin[0] - Position[0]) + (Co[1]) * sqr(ray->origin[1] - Position[1]) + (Co[2]) * sqr(ray->origin[2] - Position[2]) + (Co[3]) * (ray->origin[0] - Position[0]) * (ray->origin[1] - Position[1]) + (Co[4]) * (ray->origin[0] - Position[0]) * (ray->origin[2] - Position[2]) + (Co[5]) * (ray->origin[1] - Position[1]) * (ray->origin[2] - Position[2]) + (Co[6]) * (ray->origin[0] - Position[0]) + (Co[7]) * (ray->origin[1] - Position[1]) + (Co[8]) * (ray->origin[2] - Position[2]) + (Co[9]);
+    // Tests
     
     double det = sqr(b) - 4 * a * c;
     if (det < 0) return -1;
@@ -139,7 +140,7 @@ void get_best_solution(Ray *ray, int self_index, double max_distance, int *ret_i
                                     objects[i].plane.normal);
                 break;
             case QUAD:
-                t = quadric_intersection(ray, objects[i].quadric.coefficient);
+                t = quadric_intersection(ray, objects[i].quadric.coefficient,objects[i].quadric.position);
                 break;
             default:
                 // Error
@@ -244,7 +245,7 @@ void shade(Ray *ray, int object_index, double t, double color[3]) {
             Vector_zero(specular);
 
             get_diffuse(normal, L, lights[i].color, obj_diff_color, diffuse);
-            calculate_specular(20, L, R, normal, V, obj_spec_color, lights[i].color, specular);
+            get_specular(20, L, R, normal, V, obj_spec_color, lights[i].color, specular);
             
             double fang,frad;
             Vector obj_to_light_dir;

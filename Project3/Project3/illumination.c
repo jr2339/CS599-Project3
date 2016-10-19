@@ -36,7 +36,8 @@ void get_diffuse(double *normal_vector, double *light_vector, double *light_colo
     }
 }
 /*=======================================================================================================================*/
-void calculate_specular(double ns, double *L, double *R, double *N, double *V, double *KS, double *IL, double *out_color) {
+
+void get_specular(double ns, double *L, double *R, double *N, double *V, double *KS, double *IL, double *out_color) {
     double v_dot_r = Vector_dot(V, R);
     double n_dot_l = Vector_dot(N, L);
     if (v_dot_r > 0 && n_dot_l > 0) {

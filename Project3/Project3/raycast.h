@@ -29,7 +29,7 @@ int get_camera(OBJECT *objects);
 void shade_pixel(double *color, int row, int col,Image *image);
 double plane_intersection(Ray *ray, double *Pos, double *Norm);
 double sphere_intersection(Ray *ray, double *C, double r);
-double quadric_intersection(Ray *ray, double *Co);
+double quadric_intersection(Ray *ray, double *Co,Vector Position);
 void raycast_scene(Image *image, double cam_width, double cam_height, OBJECT *object);
 
 #endif /* raycast_h */

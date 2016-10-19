@@ -55,6 +55,7 @@ typedef struct QUADRIC {
     double *diff_color;
     double *spec_color;
     double *coefficient;
+    double *position;
 } QUADRIC;
 
 
@@ -92,6 +93,7 @@ extern int num_objects;
 
 void read_scene(const char* filename);
 void get_objects(OBJECT *object);
+
 
 
 

@@ -89,77 +89,31 @@ double sphere_intersection(Ray *ray, double *C, double r) {
     return t;
 }
 /*==================================================================================================*/
-double quadric_intersection(double *Ro, double *Rd, double *Co){
+double quadric_intersection(Ray *ray, double *Co){
     double a,b,c;
-    double t0,t1; // we have two solutions if delta >0
-     a = Co[0]*sqr(Rd[0]) //A(xd)^2
-        +Co[1]*sqr(Rd[1]) //B(yd)^2
-        +Co[2]*sqr(Rd[2]) //C(zd)^2
-        +Co[3]*Rd[0]*Rd[1] //D * xd *yd
-        +Co[4]*Rd[0]*Rd[2] //E * xd *zd
-        +Co[5]*Rd[1]*Rd[2];//F *yd *zd
-     //printf("quadric a = %lf\n", a);
-     b = 2*Co[0]*Ro[0]*Rd[0]   // 2*A*xo*xd
-        +2*Co[1]*Ro[1]*Rd[1]   //2*B*yo*yd
-        +2*Co[2]*Ro[2]*Rd[2]   //2*C*zo*zd
-        +  Co[3]*((Ro[0]*Rd[1])+(Ro[1]*Rd[0]))   //D*((xo*yd)+(yo*xd))
-        +  Co[4]*((Ro[0]*Rd[2])+(Ro[2]*Rd[0]))  //E*(xo*zd+zo*xd)
-        +  Co[5]*((Ro[1]*Rd[2])+(Rd[1]*Ro[2]))  //F*(yo*zd+yd*zo)
-        +  Co[6]*Rd[0]          //G*xd
-        +  Co[7]*Rd[1]          //H*yd
-        +  Co[8]*Rd[2];         //I*zd
-     //printf("quadric b = %lf\n", b);
-     c = Co[0]*sqr(Ro[0])       //A*xo^2
-        +Co[1]*sqr(Ro[1])       //B*yo^2
-        +Co[2]*sqr(Ro[2])       //C*zo^2
-        +Co[3]*Ro[0]*Ro[1]      //D*xo*yo
-        +Co[4]*Ro[0]*Ro[2]      //E*xo*zo
-        +Co[5]*Ro[1]*Ro[2]      //F*yo*zo
-        +Co[6]*Ro[0]            //G*xo
-        +Co[7]*Ro[1]            //H*yo
-        +Co[8]*Ro[2]            //I*zo
-        +Co[9];                 //J
-     //printf("quadric c = %lf\n", c);
-     if (a > 0.00001 || a < -0.00001) { // if a !=0
-         // check that discriminant is <, =, or > 0
-         double disc = sqr(b) - 4*a*c;
-         if (disc < 0) {
-             //printf("disc was < 0\n");
-             return -1; // no solution
-         }
-         else{
-             t0 = (-1*b - sqrt(sqr(b) - 4*a*c))/(2*a);
-             t1 = (-1*b + sqrt(sqr(b) - 4*a*c))/(2*a);
-         }
-
-     }
-     else{
-         t0 = -c/b;
-         t1 = -c/b;
-     }
-     //We campare t0 and t1
-     if (t0 < 0 && t1 < 0) {
-         // no intersection
-         return -1;
-     }
-     else if (t0 < 0 && t1 > 0) {
-         return t1;
-     }
-     else if (t0 > 0 && t1 < 0) {
-         return t0;
-     }
-     else { // they were both positive
-         if (t0 <= t1)
-             return t0;
-         else
-             return t1;
-     }
-
-     
+    Vector Position;
+    
+    a = (Co[0]) * sqr(ray->direction[0]) + (Co[1]) * sqr(ray->direction[1]) + (Co[2]) * sqr(ray->direction[2]) + (Co[3]) * (ray->direction[0]) * (ray->direction[1]) + (Co[4]) * (ray->direction[0]) * (ray->direction[2]) + (Co[5]) * (ray->direction[1]) * (ray->direction[2]);
+    
+    b = 2*(Co[0]) * (ray->origin[0] - Position[0]) * (ray->direction[0]) + 2*(Co[1]) * (ray->origin[1] - Position[1]) * (ray->direction[1]) + 2*(Co[2]) * (ray->origin[2] - Position[2]) * (ray->direction[2]) + (Co[3]) * ((ray->origin[0] - Position[0]) * (ray->direction[1]) + (ray->origin[1] - Position[1]) * (ray->direction[0])) + (Co[4]) * (ray->origin[0] - Position[0]) * (ray->direction[2]) + (Co[5]) * ((ray->origin[1] - Position[1]) * (ray->direction[2]) + (ray->direction[1]) * (ray->origin[2] - Position[2])) + (Co[6]) * (ray->direction[0]) + (Co[7]) * (ray->direction[1]) + (Co[8]) * (ray->direction[2]);
+    
+    
+    c = (Co[0]) * sqr(ray->origin[0] - Position[0]) + (Co[1]) * sqr(ray->origin[1] - Position[1]) + (Co[2]) * sqr(ray->origin[2] - Position[2]) + (Co[3]) * (ray->origin[0] - Position[0]) * (ray->origin[1] - Position[1]) + (Co[4]) * (ray->origin[0] - Position[0]) * (ray->origin[2] - Position[2]) + (Co[5]) * (ray->origin[1] - Position[1]) * (ray->origin[2] - Position[2]) + (Co[6]) * (ray->origin[0] - Position[0]) + (Co[7]) * (ray->origin[1] - Position[1]) + (Co[8]) * (ray->origin[2] - Position[2]) + (Co[9]);
+    
+    double det = sqr(b) - 4 * a * c;
+    if (det < 0) return -1;
+    
+    det = sqrt(det);
+    // Tests which is the closest one and in front of camera.
+    double t = (-b - det)/(2 * a);
+    if (t > 0) return t;
+    t = (-b + det)/(2 * a);
+    if (t > 0) return t;
+    
+    return -1;
 }
  
 /*==================================================================================================*/
-
 void get_best_solution(Ray *ray, int self_index, double max_distance, int *ret_index, double *ret_best_t) {
     int best_o = -1;
     double best_t = INFINITY;
@@ -184,6 +138,9 @@ void get_best_solution(Ray *ray, int self_index, double max_distance, int *ret_i
                 t = plane_intersection(ray, objects[i].plane.position,
                                     objects[i].plane.normal);
                 break;
+            case QUAD:
+                t = quadric_intersection(ray, objects[i].quadric.coefficient);
+                break;
             default:
                 // Error
                 exit(1);
@@ -198,11 +155,24 @@ void get_best_solution(Ray *ray, int self_index, double max_distance, int *ret_i
     (*ret_index) = best_o;
     (*ret_best_t) = best_t;
 }
-
-
+/*==================================================================================================*/
+void get_intersection(double* intersection, Ray *ray, double t){
+    intersection[0] = ray->origin[0] + ray->direction[0] * t;
+    intersection[1] = ray->origin[1] + ray->direction[1] * t;
+    intersection[2] = ray->origin[2] + ray->direction[2] * t;
+}
 
 /*==================================================================================================*/
 
+void get_quadric_normal(Vector normal,QUADRIC q, double* inter){
+    normal[0] = 2 * q.coefficient[0] * (inter[0] - q.position[0]) + q.coefficient[3] * (inter[1] - q.position[1]) + q.coefficient[4] * (inter[2] - q.position[2]) + q.coefficient[6];
+    normal[1] = 2 * q.coefficient[1] * (inter[1] - q.position[1]) + q.coefficient[3] * (inter[0] - q.position[0]) + q.coefficient[5] * (inter[2] - q.position[2]) + q.coefficient[7];
+    normal[2] = 2 * q.coefficient[2] * (inter[2] - q.position[2]) + q.coefficient[4] * (inter[0] - q.position[0]) + q.coefficient[5] * (inter[1] - q.position[1]) + q.coefficient[8];
+    normalize(normal);
+    
+}
+
+/*==================================================================================================*/
 void shade(Ray *ray, int object_index, double t, double color[3]) {
 
     Vector new_origin;
@@ -231,7 +201,6 @@ void shade(Ray *ray, int object_index, double t, double color[3]) {
         
         // new check new ray for intersections with other objects
         get_best_solution(&new_ray, object_index, distance_to_light, &best_o, &best_t);
-        
         Vector normal,obj_diff_color,obj_spec_color;
      
         if (best_o == -1) { // this means there was no object in the way between the current one and the light
@@ -250,7 +219,15 @@ void shade(Ray *ray, int object_index, double t, double color[3]) {
                 // copy the colors into temp variables
                 Vector_copy(objects[object_index].sphere.diff_color, obj_diff_color);
                 Vector_copy(objects[object_index].sphere.spec_color, obj_spec_color);
-            } else {
+            }else if (objects[object_index].type == QUAD) {
+                Vector_copy(objects[object_index].quadric.diff_color,obj_diff_color);
+                Vector_copy(objects[object_index].sphere.spec_color, obj_spec_color);
+                // find normal of our current intersection on the sphere
+                QUADRIC objects[object_index];
+                Vector inter ={0,0,0};
+                get_quadric_normal(normal,objects[object_index], inter);
+            }
+            else {
                 fprintf(stderr, "Error: shade: Trying to shade unsupported type of object\n");
                 exit(1);
             }

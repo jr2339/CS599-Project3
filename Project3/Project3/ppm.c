@@ -146,7 +146,7 @@ Image *ImageRead(const char *filename){
                 fprintf(stderr,"cannot read image datat from file \n");
                 exit(1);
             }
-   
+
         }
         else if(buffer->magic_number == 7){
             size_t num2;

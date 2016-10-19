@@ -16,7 +16,6 @@
 
 typedef double Vector[3]; // array of double values to represent
 
-
 double sqr(double v);
 void Vector_zero(Vector vector);
 void Vector_copy(Vector in, Vector out);

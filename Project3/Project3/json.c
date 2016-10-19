@@ -17,7 +17,6 @@
 // Problem: if we do ungetc, it could screw us up on the line #
 
 
-
 int line = 1;  // global variable, it will tells us which line is not correct
 
 OBJECT objects[MAX_OBJECTS]; // Allocate an array for All Objects in Json File

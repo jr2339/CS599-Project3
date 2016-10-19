@@ -19,7 +19,6 @@
 // Create a new type to define Image
 
 
-
 typedef struct Image
 {
     int width;

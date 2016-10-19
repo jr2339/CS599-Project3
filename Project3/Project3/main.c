@@ -12,7 +12,6 @@
 #include <math.h>
 #include "raycast.h"
 
-
 int main(int argc, const char * argv[]) {
     if (argc != 5) {
         fprintf(stderr, "Error: main: You must have 4 arguments\n");

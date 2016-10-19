@@ -34,7 +34,6 @@ void normalize(double *v) {
 }
 
 
-
 double Vector_len(Vector a){
     return sqrt(sqr(a[0])+sqr(a[1])+sqr(a[2]));
 }

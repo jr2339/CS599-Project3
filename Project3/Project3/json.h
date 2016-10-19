@@ -71,7 +71,6 @@ typedef struct LIGHT{
     double ang_att0;
 } LIGHT;
 
-
 /*DEFINE STRUCTURE  FOR JASON FILE WHICH STROE OUR OBJECT*/
 typedef struct OBJECT{
     int type;

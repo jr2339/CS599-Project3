@@ -32,5 +32,4 @@ double sphere_intersection(Ray *ray, double *C, double r);
 double quadric_intersection(Ray *ray, double *Co);
 void raycast_scene(Image *image, double cam_width, double cam_height, OBJECT *object);
 
-
 #endif /* raycast_h */

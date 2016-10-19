@@ -234,7 +234,6 @@ void shade(Ray *ray, int object_index, double t, double color[3]) {
             normalize(normal);
             Vector L,R,V;
 
-
             Vector_copy(new_ray.direction, L);
             normalize(L);
             Vector_reflect(L, normal, R);

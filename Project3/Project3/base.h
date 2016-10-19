@@ -13,6 +13,7 @@
 #define true 1
 #define MAX_SIZE 1024
 
+
 /* variables and types */
 typedef int8_t boolean;
 

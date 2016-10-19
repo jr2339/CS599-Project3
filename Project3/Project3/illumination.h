@@ -28,7 +28,11 @@ void calculate_specular(double ns,
                         double *KS,
                         double *IL,
                         double *out_color);
+
 double check_value(double color_val);
 
+double calculate_angular_att(LIGHT *light, Vector direction_to_object);
+
+double calculate_radial_att(LIGHT *light, double distance_to_light);
 
 #endif /* illumination_h */

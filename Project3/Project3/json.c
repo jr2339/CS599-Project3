@@ -295,6 +295,10 @@ void read_scene(const char* filename) {
                     expect_c(json, ':');
                     skip_ws(json);
                     if (strcmp(key, "width") == 0) {
+                        if (object_type != CAM) {
+                            fprintf(stderr, "Error: read_json: Width cannot be set on this type: %d\n", line);
+                            exit(1);
+                        }
                         double temp = next_number(json);
                         if (temp <= 0) {
                             fprintf(stderr, "Error: read_json: width must be positive: %d\n", line);
@@ -304,6 +308,10 @@ void read_scene(const char* filename) {
                         
                     }
                     else if (strcmp(key, "height") == 0) {
+                        if (object_type != CAM) {
+                            fprintf(stderr, "Error: read_json: Width cannot be set on this type: %d\n", line);
+                            exit(1);
+                        }
                         double temp = next_number(json);
                         if (temp <= 0) {
                             fprintf(stderr, "Error: read_json: height must be positive: %d\n", line);
@@ -312,6 +320,10 @@ void read_scene(const char* filename) {
                         objects[object_counter].camera.height = temp;
                     }
                     else if (strcmp(key, "radius") == 0) {
+                        if (object_type != SPH) {
+                            fprintf(stderr, "Error: read_json: Radius cannot be set on this type: %d\n", line);
+                            exit(1);
+                        }
                         double temp = next_number(json);
                         if (temp <= 0) {
                             fprintf(stderr, "Error: read_json: radius must be positive: %d\n", line);
@@ -319,7 +331,27 @@ void read_scene(const char* filename) {
                         }
                         objects[object_counter].sphere.radius = temp;
                     }
+                    else if (strcmp(key, "theta") == 0) {
+                        if (object_type != LIG) {
+                            fprintf(stderr, "Error: read_json: Theta cannot be set on this type: %d\n", line);
+                            exit(1);
+                        }
+                        double temp = next_number(json);
+                        if (temp > 0.0) {
+                            lights[light_counter].type = SPOTLIG;
+                        }
+                        else if (temp < 0.0) {
+                            fprintf(stderr, "Error: read_json: theta must be >= 0: %d\n", line);
+                            exit(1);
+                        }
+                        lights[light_counter].theta_deg = temp;
+                    }
+
                     else if (strcmp(key, "radial-a0") == 0) {
+                        if (object_type != LIG) {
+                            fprintf(stderr, "Error: read_json: Radial-a0 cannot be set on this type: %d\n", line);
+                            exit(1);
+                        }
                         double temp = next_number(json);
                         if (temp < 0) { // TODO: find out if this should be <=
                             fprintf(stderr, "Error: read_json: radial-a0 must be positive: %d\n", line);
@@ -328,6 +360,10 @@ void read_scene(const char* filename) {
                         lights[light_counter].rad_att0 = temp;
                     }
                     else if (strcmp(key, "radial-a1") == 0) {
+                        if (object_type != LIG) {
+                            fprintf(stderr, "Error: read_json: Radial-a0 cannot be set on this type: %d\n", line);
+                            exit(1);
+                        }
                         double temp = next_number(json);
                         if (temp < 0) { // TODO: find out if this should be <=
                             fprintf(stderr, "Error: read_json: radial-a1 must be positive: %d\n", line);
@@ -336,6 +372,10 @@ void read_scene(const char* filename) {
                         lights[light_counter].rad_att1 = temp;
                     }
                     else if (strcmp(key, "radial-a2") == 0) {
+                        if (object_type != LIG) {
+                            fprintf(stderr, "Error: read_json: Radial-a0 cannot be set on this type: %d\n", line);
+                            exit(1);
+                        }
                         double temp = next_number(json);
                         if (temp < 0) { // TODO: find out if this should be <=
                             fprintf(stderr, "Error: read_json: radial-a2 must be positive: %d\n", line);
@@ -344,6 +384,10 @@ void read_scene(const char* filename) {
                         lights[light_counter].rad_att2 = temp;
                     }
                     else if (strcmp(key, "angular-a0") == 0) {
+                        if (object_type != LIG) {
+                            fprintf(stderr, "Error: read_json: Radial-a0 cannot be set on this type: %d\n", line);
+                            exit(1);
+                        }
                         double temp = next_number(json);
                         if (temp < 0) { // TODO: find out if this should be <=
                             fprintf(stderr, "Error: read_json: angular-a0 must be positive: %d\n", line);
@@ -357,6 +401,14 @@ void read_scene(const char* filename) {
                             exit(1);
                         }
                         lights[light_counter].color = next_color(json, false);
+                    }
+                    else if (strcmp(key, "direction") == 0) {
+                        if (object_type != LIG) {
+                            fprintf(stderr, "Error: Direction vector can only be applied to a light object\n");
+                            exit(1);
+                        }
+                        lights[light_counter].type = SPOTLIG;
+                        lights[light_counter].direction = next_vector(json);
                     }
                     else if (strcmp(key, "specular_color") == 0) {
                         if (object_type == SPH)

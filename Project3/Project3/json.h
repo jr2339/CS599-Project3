@@ -23,7 +23,10 @@
 #define SPH 2
 #define PLAN 3
 #define QUAD 4
-#define LIG 4
+#define LIG 5
+#define SPOTLIG 6
+#define POINTLIG 7
+
 /*Each Structure is a type of Objects in Jason File*/
 typedef struct CAMERA {
     double width;
@@ -56,9 +59,11 @@ typedef struct QUADRIC {
 
 
 typedef struct LIGHT{
+    int type;
     double *color;
     double *position;
     double *direction;
+    double theta_deg;
     double rad_att0;
     double rad_att1;
     double rad_att2;

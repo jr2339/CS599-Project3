@@ -16,21 +16,16 @@ double check_value(double color_val){
     else
         return color_val;
 }
-
-
-
-
-
-
+/*=======================================================================================================================*/
 void calculate_diffuse(double *N, double *L, double *IL, double *KD, double *out_color) {
-    // K_a*I_a should be added to the beginning of this whole thing, which is a constant and ambient light
+
     double n_dot_l = Vector_dot(N, L);
     if (n_dot_l > 0) {
-        double diffuse_product[3];
+        Vector diffuse_product;
         diffuse_product[0] = KD[0] * IL[0];
         diffuse_product[1] = KD[1] * IL[1];
         diffuse_product[2] = KD[2] * IL[2];
-        // multiply by n_dot_l and store in out_color
+
         Vector_scale(diffuse_product, n_dot_l, out_color);
     }
     else {
@@ -40,13 +35,13 @@ void calculate_diffuse(double *N, double *L, double *IL, double *KD, double *out
         out_color[2] = 0;
     }
 }
-
+/*=======================================================================================================================*/
 void calculate_specular(double ns, double *L, double *R, double *N, double *V, double *KS, double *IL, double *out_color) {
     double v_dot_r = Vector_dot(V, R);
     double n_dot_l = Vector_dot(N, L);
     if (v_dot_r > 0 && n_dot_l > 0) {
         double vr_to_the_ns = pow(v_dot_r, ns);
-        double spec_product[3];
+        Vector spec_product;
         spec_product[0] = KS[0] * IL[0];
         spec_product[1] = KS[1] * IL[1];
         spec_product[2] = KS[2] * IL[2];
@@ -55,5 +50,40 @@ void calculate_specular(double ns, double *L, double *R, double *N, double *V, d
     else {
         Vector_zero(out_color);
     }
+}
+
+/*=======================================================================================================================*/
+double calculate_angular_att(LIGHT *light, Vector direction_to_object){
+    if (light->type != SPOTLIG){
+        return 1.0;
+    }
+    if (light->direction == NULL) {
+        fprintf(stderr, "Error: calculate_angular_att: Can't have spotlight with no direction\n");
+        exit(1);
+    }
+    double theta_rad = light->theta_deg * (M_PI / 180);
+    double cos_theta = cos(theta_rad);
+    //double cos_theta = cos(M_PI / 2.0);
+    double vo_dot_vl = Vector_dot(light->direction, direction_to_object);
+    if (vo_dot_vl < cos_theta){
+        return 0.0;
+    }
+    return pow(vo_dot_vl, light->ang_att0);
+}
+
+/*==================================================================================================*/
+double calculate_radial_att(LIGHT *light, double distance_to_light) {
+    if (light->rad_att0 == 0 && light->rad_att1 == 0 && light->rad_att2 == 0) {
+        fprintf(stdout, "WARNING: calculate_radial_att: Found all 0s for attenuation. Assuming default values of radial attenuation\n");
+        light->rad_att2 = 1.0;
+    }
+    // if d_l == infinity, return 1
+    if (distance_to_light > 99999999999999) {
+        return 1.0;
+    }
+    
+    double dl_sqr = sqr(distance_to_light);
+    double denom = light->rad_att2 * dl_sqr + light->rad_att1 * distance_to_light + light->ang_att0;
+    return 1.0 / denom;
 }
 

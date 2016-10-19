@@ -51,7 +51,6 @@ void calculate_specular(double ns, double *L, double *R, double *N, double *V, d
         Vector_zero(out_color);
     }
 }
-
 /*=======================================================================================================================*/
 double calculate_angular_att(LIGHT *light, Vector direction_to_object){
     if (light->type != SPOTLIG){
@@ -70,7 +69,6 @@ double calculate_angular_att(LIGHT *light, Vector direction_to_object){
     }
     return pow(vo_dot_vl, light->ang_att0);
 }
-
 /*==================================================================================================*/
 double calculate_radial_att(LIGHT *light, double distance_to_light) {
     if (light->rad_att0 == 0 && light->rad_att1 == 0 && light->rad_att2 == 0) {

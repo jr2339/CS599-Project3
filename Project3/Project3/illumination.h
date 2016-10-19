@@ -12,7 +12,6 @@
 #include <stdio.h>
 #include <math.h>
 #include "vector.h"
-
 //double calculate_angular_att(LIGHT *light, double direction_to_object[3]);
 void calculate_diffuse(double *normal_vector,
                        double *light_vector,

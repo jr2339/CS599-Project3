@@ -9,7 +9,7 @@
   {
   "type": "sphere",
   "diffuse_color": [1.0, 0, 0],
-  "specular_color": [1.0, 1.0, 1.0],
+  "specular_color": [0, 0, 0],
   "position": [0, 1, 5],
   "radius": 2.0
   },

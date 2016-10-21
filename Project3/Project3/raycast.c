@@ -89,18 +89,19 @@ double sphere_intersection(Ray *ray, double *C, double r) {
     return t;
 }
 /*==================================================================================================*/
+
 double quadric_intersection(Ray *ray, double *Co,double* Position){
     double a,b,c;
-
+    
     a = (Co[0]) * sqr(ray->direction[0]) + (Co[1]) * sqr(ray->direction[1]) + (Co[2]) * sqr(ray->direction[2]) + (Co[3]) * (ray->direction[0]) * (ray->direction[1]) + (Co[4]) * (ray->direction[0]) * (ray->direction[2]) + (Co[5]) * (ray->direction[1]) * (ray->direction[2]);
-
+    
     
     b = 2*(Co[0]) * (ray->origin[0] - Position[0]) * (ray->direction[0]) + 2*(Co[1]) * (ray->origin[1] - Position[1]) * (ray->direction[1]) + 2*(Co[2]) * (ray->origin[2] - Position[2]) * (ray->direction[2]) + (Co[3]) * ((ray->origin[0] - Position[0]) * (ray->direction[1]) + (ray->origin[1] - Position[1]) * (ray->direction[0])) + (Co[4]) * (ray->origin[0] - Position[0]) * (ray->direction[2]) + (Co[5]) * ((ray->origin[1] - Position[1]) * (ray->direction[2]) + (ray->direction[1]) * (ray->origin[2] - Position[2])) + (Co[6]) * (ray->direction[0]) + (Co[7]) * (ray->direction[1]) + (Co[8]) * (ray->direction[2]);
     
-   
+    
     
     c = (Co[0]) * sqr(ray->origin[0] - Position[0]) + (Co[1]) * sqr(ray->origin[1] - Position[1]) + (Co[2]) * sqr(ray->origin[2] - Position[2]) + (Co[3]) * (ray->origin[0] - Position[0]) * (ray->origin[1] - Position[1]) + (Co[4]) * (ray->origin[0] - Position[0]) * (ray->origin[2] - Position[2]) + (Co[5]) * (ray->origin[1] - Position[1]) * (ray->origin[2] - Position[2]) + (Co[6]) * (ray->origin[0] - Position[0]) + (Co[7]) * (ray->origin[1] - Position[1]) + (Co[8]) * (ray->origin[2] - Position[2]) + (Co[9]);
-
+    
     
     double det = sqr(b) - 4 * a * c;
     if (det < 0) return -1;
@@ -114,7 +115,7 @@ double quadric_intersection(Ray *ray, double *Co,double* Position){
     
     return -1;
 }
- 
+
 /*==================================================================================================*/
 void get_best_solution(Ray *ray, int self_index, double max_distance, int *ret_index, double *ret_best_t) {
     int best_o = -1;
@@ -159,13 +160,22 @@ void get_best_solution(Ray *ray, int self_index, double max_distance, int *ret_i
 }
 /*==================================================================================================*/
 
-void get_quadric_normal(Vector normal,QUADRIC q, double* inter){
-    normal[0] = 2 * q.coefficient[0] * (inter[0] - q.position[0]) + q.coefficient[3] * (inter[1] - q.position[1]) + q.coefficient[4] * (inter[2] - q.position[2]) + q.coefficient[6];
-    normal[1] = 2 * q.coefficient[1] * (inter[1] - q.position[1]) + q.coefficient[3] * (inter[0] - q.position[0]) + q.coefficient[5] * (inter[2] - q.position[2]) + q.coefficient[7];
-    normal[2] = 2 * q.coefficient[2] * (inter[2] - q.position[2]) + q.coefficient[4] * (inter[0] - q.position[0]) + q.coefficient[5] * (inter[1] - q.position[1]) + q.coefficient[8];
+void get_intersection(double* intersection, Ray *ray, double t){
+    intersection[0] = ray->origin[0] + ray->direction[0] * t;
+    intersection[1] = ray->origin[1] + ray->direction[1] * t;
+    intersection[2] = ray->origin[2] + ray->direction[2] * t;
+}
+
+void get_quadric_normal(double* normal,double *Coefficient,double *Position){
+
+    normal[0] =-2*Coefficient[0]*(Position[0])-Coefficient[3]*(Position[1])-Coefficient[4]*(Position[2])-Coefficient[6];
+    normal[1] =-2*Coefficient[1]*(Position[1])-Coefficient[3]*(Position[0])-Coefficient[5]*(Position[2])-Coefficient[7];
+    normal[2] =-2*Coefficient[2] * (Position[2])-Coefficient[4]*(Position[0])- Coefficient[5] * (Position[1])-Coefficient[8];
     normalize(normal);
     
 }
+
+
 
 /*==================================================================================================*/
 void shade(Ray *ray, int object_index, double t, double color[3]) {
@@ -211,20 +221,15 @@ void shade(Ray *ray, int object_index, double t, double color[3]) {
             } else if (objects[object_index].type == SPH) {
                 // find normal of our current intersection on the sphere
                 Vector_sub(new_ray.origin, objects[object_index].sphere.position, normal);
-                // copy the colors into temp variables
+          
                 Vector_copy(objects[object_index].sphere.diff_color, obj_diff_color);
                 Vector_copy(objects[object_index].sphere.spec_color, obj_spec_color);
-                printf("Normal Vector at here is %f, %f, %f\n",normal[0],normal[1],normal[2]);
+               
             }else if (objects[object_index].type == QUAD) {
+                get_quadric_normal(normal,objects[object_index].quadric.coefficient, objects[object_index].quadric.position);
+                //printf("normal at here is %lf,%lf,%lf\n",normal[0],normal[1],normal[2]);
                 Vector_copy(objects[object_index].quadric.diff_color,obj_diff_color);
                 Vector_copy(objects[object_index].sphere.spec_color, obj_spec_color);
-                // find normal of our current intersection on the sphere
-                QUADRIC objects[object_index];
-                Vector inter ={0,0,0};
-                /*normal at here is not correct, try to figure it*/
-                get_quadric_normal(normal,objects[object_index], inter);
-                //printf("Normal Vector at here is %f, %f, %f\n",normal[0],normal[1],normal[2]);
-
             }
             else {
                 fprintf(stderr, "Error: shade: Trying to shade unsupported type of object\n");
@@ -243,6 +248,7 @@ void shade(Ray *ray, int object_index, double t, double color[3]) {
             Vector_zero(specular);
 
             get_diffuse(normal, L, lights[i].color, obj_diff_color, diffuse);
+            
             get_specular(20, L, R, normal, V, obj_spec_color, lights[i].color, specular);
             
             double fang,frad;
@@ -253,12 +259,15 @@ void shade(Ray *ray, int object_index, double t, double color[3]) {
 
 
             fang = calculate_angular_att(&lights[i], obj_to_light_dir);
+           
             frad = calculate_radial_att(&lights[i], distance_to_light);
             
             
             color[0] += frad*fang*(specular[0] + diffuse[0]);
             color[1] += frad*fang*(specular[1] + diffuse[1]);
             color[2] += frad*fang*(specular[2] + diffuse[2]);
+
+            //printf("%lf,%lf,%lf\n",color[0],color[1],color[2]);
 
         }
         // there was an object in the way, so we don't do anything. It's shadow
@@ -276,7 +285,7 @@ void raycast_scene(Image *img, double cam_width, double cam_height, OBJECT *obje
     double pixwidth = (double)cam_width / (double)img->width;
     
     Ray ray = {
-        .origin = {0, 0, 0},
+        .origin = {0, 0, 8},
         .direction = {0, 0, 0}
     };
     

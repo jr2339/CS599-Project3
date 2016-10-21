@@ -54,8 +54,8 @@ typedef struct PLANE {
 typedef struct QUADRIC {
     double *diff_color;
     double *spec_color;
-    double *coefficient;
     double *position;
+    double *coefficient;
 } QUADRIC;
 
 

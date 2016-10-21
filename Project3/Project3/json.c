@@ -438,10 +438,10 @@ void read_scene(const char* filename) {
                             objects[object_counter].sphere.position = next_vector(json);
                         else if (object_type == PLAN)
                             objects[object_counter].plane.position = next_vector(json);
-                        else if (object_type == QUAD)
-                            objects[object_counter].quadric.position = next_vector(json);
                         else if (object_type == LIG)
                             lights[light_counter].position = next_vector(json);
+                        else if (object_type == QUAD)
+                            objects[object_counter].quadric.position = next_vector(json);
                         else {
                             fprintf(stderr, "Error: read_json: Position vector can't be applied here: %d\n", line);
                             exit(1);
